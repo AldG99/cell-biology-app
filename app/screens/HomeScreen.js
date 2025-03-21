@@ -7,7 +7,7 @@ import {
   SafeAreaView,
   ScrollView,
 } from 'react-native';
-import CellButton from '../components/cellButton';
+import CellButton from '../components/CellButton';
 import cellData from '../data/cellData';
 
 const HomeScreen = ({ navigation }) => {

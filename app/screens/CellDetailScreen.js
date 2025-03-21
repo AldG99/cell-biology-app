@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { SafeAreaView, StyleSheet, Animated } from 'react-native';
-import CellDetail from '../components/cellDetail';
+import CellDetail from '../components/CellDetail';
 import cellData from '../data/cellData';
 
 const CellDetailScreen = ({ route }) => {
