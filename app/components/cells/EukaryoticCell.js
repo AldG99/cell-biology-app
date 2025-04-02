@@ -1,26 +1,41 @@
-// components/EukaryoticCell.js
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, View, Dimensions } from 'react-native';
 import BaseCell from '../shared/BaseCell';
 import { RoughER, GolgiApparatus, Nucleus } from '../shared/CellParts';
 import { eukaryoticCellConfig } from '../../data/cellVisualizations';
 
+const { width } = Dimensions.get('window');
+// Scale factor for part sizes based on screen width
+const SCALE_FACTOR = width < 360 ? 0.8 : 1;
+
 const EukaryoticCell = ({ onSelectPart }) => {
-  // Función para renderizar formas personalizadas específicas de célula eucariota
+  // Function to render custom shapes specific to eukaryotic cells
   const renderCustomShape = part => {
+    // Apply scale factor to all sizes
+    const scaledPart = {
+      ...part,
+      size: part.size ? part.size * SCALE_FACTOR : undefined,
+      width: part.width ? part.width * SCALE_FACTOR : undefined,
+      height: part.height ? part.height * SCALE_FACTOR : undefined,
+    };
+
     switch (part.customShape) {
       case 'nucleus':
         return (
           <Nucleus
-            color={part.color}
-            size={part.size}
-            borderColor={part.borderColor}
+            color={scaledPart.color}
+            size={scaledPart.size}
+            borderColor={scaledPart.borderColor}
           />
         );
 
       case 'rough-er':
         return (
-          <RoughER color={part.color} width={part.width} height={part.height} />
+          <RoughER
+            color={scaledPart.color}
+            width={scaledPart.width}
+            height={scaledPart.height}
+          />
         );
 
       case 'smooth-er':
@@ -29,14 +44,14 @@ const EukaryoticCell = ({ onSelectPart }) => {
             style={[
               styles.smoothER,
               {
-                width: part.width,
-                height: part.height,
-                backgroundColor: part.color,
+                width: scaledPart.width,
+                height: scaledPart.height,
+                backgroundColor: scaledPart.color,
                 borderRadius: 15,
               },
             ]}
           >
-            {/* Líneas internas curvas */}
+            {/* Internal curved lines */}
             <View style={styles.smoothERMembrane1} />
             <View style={styles.smoothERMembrane2} />
             <View style={styles.smoothERMembrane3} />
@@ -46,19 +61,19 @@ const EukaryoticCell = ({ onSelectPart }) => {
       case 'golgi':
         return (
           <GolgiApparatus
-            color={part.color}
-            width={part.width}
-            height={part.height}
+            color={scaledPart.color}
+            width={scaledPart.width}
+            height={scaledPart.height}
           />
         );
 
       case 'centrosome':
         return (
           <View style={styles.centrosomeContainer}>
-            {/* Centriolos perpendiculares */}
+            {/* Perpendicular centrioles */}
             <View style={styles.centrosomeHorizontal} />
             <View style={styles.centrosomeVertical} />
-            {/* Material pericentriolar */}
+            {/* Pericentriolar material */}
             <View style={styles.pericentriolarMaterial} />
           </View>
         );
@@ -69,17 +84,17 @@ const EukaryoticCell = ({ onSelectPart }) => {
             style={[
               styles.cytoskeleton,
               {
-                width: part.size,
-                height: part.size,
+                width: scaledPart.size,
+                height: scaledPart.size,
               },
             ]}
           >
-            {/* Filamentos distribuidos aleatoriamente */}
-            {Array(30)
+            {/* Randomly distributed filaments - reduced for better performance */}
+            {Array(20)
               .fill(0)
               .map((_, i) => {
                 const angle = Math.random() * 360;
-                const length = 20 + Math.random() * 100;
+                const length = 20 + Math.random() * 80;
                 const thickness = 1 + Math.random() * 0.5;
                 const posTop = Math.random() * 100;
                 const posLeft = Math.random() * 100;
@@ -112,13 +127,25 @@ const EukaryoticCell = ({ onSelectPart }) => {
     }
   };
 
+  // Create a scaled version of the configuration
+  const scaledConfig = {
+    ...eukaryoticCellConfig,
+    parts: eukaryoticCellConfig.parts.map(part => ({
+      ...part,
+      size: part.size ? part.size * SCALE_FACTOR : undefined,
+      width: part.width ? part.width * SCALE_FACTOR : undefined,
+      height: part.height ? part.height * SCALE_FACTOR : undefined,
+    })),
+  };
+
   return (
     <BaseCell
-      config={eukaryoticCellConfig}
+      config={scaledConfig}
       onSelectPart={onSelectPart}
       renderCustomShape={renderCustomShape}
       cytoplasmColor="rgba(209, 196, 233, 0.3)"
       membraneColor="#7986CB"
+      cellShape="circular" // Circular shape for eukaryotic cell
     />
   );
 };
@@ -159,14 +186,14 @@ const styles = StyleSheet.create({
     transform: [{ scaleX: 0.7 }, { scaleY: 2 }],
   },
   centrosomeContainer: {
-    width: 22,
-    height: 22,
+    width: 22 * SCALE_FACTOR,
+    height: 22 * SCALE_FACTOR,
     position: 'relative',
   },
   centrosomeHorizontal: {
     position: 'absolute',
-    width: 16,
-    height: 7,
+    width: 16 * SCALE_FACTOR,
+    height: 7 * SCALE_FACTOR,
     backgroundColor: '#BA68C8',
     borderRadius: 2,
     top: '40%',
@@ -174,8 +201,8 @@ const styles = StyleSheet.create({
   },
   centrosomeVertical: {
     position: 'absolute',
-    width: 7,
-    height: 16,
+    width: 7 * SCALE_FACTOR,
+    height: 16 * SCALE_FACTOR,
     backgroundColor: '#BA68C8',
     borderRadius: 2,
     top: '25%',
@@ -186,7 +213,7 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
     backgroundColor: 'rgba(206, 147, 216, 0.3)',
-    borderRadius: 11,
+    borderRadius: 11 * SCALE_FACTOR,
     top: 0,
     left: 0,
   },
