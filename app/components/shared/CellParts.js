@@ -1,17 +1,23 @@
-// components/shared/CellParts.js
+// components/shared/CellParts.js - Improved version
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
 
-// Componente para Mitocondria
+// Improved Mitochondrion Component
 export const Mitochondrion = ({ color = '#F48FB1', style }) => (
-  <View style={[style, { backgroundColor: color }]}>
+  <View
+    style={[
+      { backgroundColor: color, borderRadius: 15, overflow: 'hidden' },
+      style,
+    ]}
+  >
+    {/* Inner cristae structures */}
     <View style={styles.mitochondrialCrista1} />
     <View style={styles.mitochondrialCrista2} />
     <View style={styles.mitochondrialCrista3} />
   </View>
 );
 
-// Componente para Retículo Endoplásmico Rugoso
+// Improved Rough Endoplasmic Reticulum Component
 export const RoughER = ({
   color = '#90CAF9',
   width = 60,
@@ -26,11 +32,12 @@ export const RoughER = ({
         height,
         borderRadius: 10,
         overflow: 'hidden',
+        position: 'relative',
       },
       style,
     ]}
   >
-    {/* Ribosomas en el RER */}
+    {/* Ribosomes on the RER - now using absolute positioning for better rendering */}
     {Array(10)
       .fill(0)
       .map((_, i) => (
@@ -47,7 +54,7 @@ export const RoughER = ({
           }}
         />
       ))}
-    {/* Líneas internas que representan membranas */}
+    {/* Internal lines representing membranes */}
     <View
       style={{
         position: 'absolute',
@@ -71,7 +78,7 @@ export const RoughER = ({
   </View>
 );
 
-// Componente para Aparato de Golgi
+// Improved Golgi Apparatus Component
 export const GolgiApparatus = ({
   color = '#A5D6A7',
   width = 45,
@@ -79,7 +86,7 @@ export const GolgiApparatus = ({
   style,
 }) => (
   <View style={[style, { width, height }]}>
-    {/* Sacos superpuestos del aparato de Golgi */}
+    {/* Stacked sacs of the Golgi apparatus */}
     {Array(5)
       .fill(0)
       .map((_, i) => (
@@ -95,7 +102,7 @@ export const GolgiApparatus = ({
           }}
         />
       ))}
-    {/* Vesículas de transporte */}
+    {/* Transport vesicles */}
     <View
       style={{
         position: 'absolute',
@@ -121,7 +128,7 @@ export const GolgiApparatus = ({
   </View>
 );
 
-// Componente para Núcleo
+// Improved Nucleus Component
 export const Nucleus = ({
   color = '#FFCC80',
   size = 60,
@@ -137,34 +144,53 @@ export const Nucleus = ({
         borderRadius: size / 2,
         borderWidth: 2,
         borderColor: borderColor,
+        position: 'relative',
+        overflow: 'hidden',
       },
       style,
     ]}
   >
-    {/* Estructuras internas del núcleo */}
-    <View style={styles.nucleolus} />
-
-    {/* Cromosomas */}
+    {/* Nucleolus */}
     <View
       style={[
-        styles.chromosome,
-        { top: '30%', left: '35%', transform: [{ rotate: '45deg' }] },
-      ]}
-    />
-    <View
-      style={[
-        styles.chromosome,
-        { top: '60%', left: '40%', transform: [{ rotate: '-30deg' }] },
-      ]}
-    />
-    <View
-      style={[
-        styles.chromosome,
-        { top: '45%', left: '60%', transform: [{ rotate: '70deg' }] },
+        styles.nucleolus,
+        { width: size * 0.3, height: size * 0.3, borderRadius: size * 0.15 },
       ]}
     />
 
-    {/* Poros nucleares */}
+    {/* Chromosomes */}
+    <View
+      style={[
+        styles.chromosome,
+        {
+          top: size * 0.3,
+          left: size * 0.35,
+          transform: [{ rotate: '45deg' }],
+        },
+      ]}
+    />
+    <View
+      style={[
+        styles.chromosome,
+        {
+          top: size * 0.6,
+          left: size * 0.4,
+          transform: [{ rotate: '-30deg' }],
+        },
+      ]}
+    />
+    <View
+      style={[
+        styles.chromosome,
+        {
+          top: size * 0.45,
+          left: size * 0.6,
+          transform: [{ rotate: '70deg' }],
+        },
+      ]}
+    />
+
+    {/* Nuclear pores */}
     {Array(8)
       .fill(0)
       .map((_, i) => {
@@ -191,7 +217,90 @@ export const Nucleus = ({
   </View>
 );
 
-// Estilos compartidos
+// Chloroplast Component for Plant Cells
+export const Chloroplast = ({
+  color = '#66BB6A',
+  width = 35,
+  height = 22,
+  borderRadius = 12,
+  style,
+}) => (
+  <View
+    style={[
+      {
+        backgroundColor: color,
+        width,
+        height,
+        borderRadius,
+        position: 'relative',
+        overflow: 'hidden',
+      },
+      style,
+    ]}
+  >
+    {/* Thylakoid membranes and grana */}
+    <View
+      style={{
+        position: 'absolute',
+        width: '80%',
+        height: 2,
+        backgroundColor: '#43A047',
+        top: '30%',
+        left: '10%',
+      }}
+    />
+    <View
+      style={{
+        position: 'absolute',
+        width: '70%',
+        height: 2,
+        backgroundColor: '#43A047',
+        top: '50%',
+        left: '15%',
+      }}
+    />
+    <View
+      style={{
+        position: 'absolute',
+        width: '60%',
+        height: 2,
+        backgroundColor: '#43A047',
+        top: '70%',
+        left: '20%',
+      }}
+    />
+    <View
+      style={{
+        position: 'absolute',
+        width: '20%',
+        height: '20%',
+        backgroundColor: '#81C784',
+        borderRadius: 3,
+        top: '40%',
+        left: '65%',
+      }}
+    />
+  </View>
+);
+
+// Plasmid Component for Prokaryotic Cells
+export const Plasmid = ({ color = '#FF6D00', size = 15, style }) => (
+  <View
+    style={[
+      {
+        width: size,
+        height: size,
+        borderRadius: size / 2,
+        borderWidth: 1.5,
+        borderColor: color,
+        borderStyle: 'dashed',
+      },
+      style,
+    ]}
+  />
+);
+
+// Shared styles
 const styles = StyleSheet.create({
   mitochondrialCrista1: {
     position: 'absolute',
@@ -218,9 +327,6 @@ const styles = StyleSheet.create({
     left: '15%',
   },
   nucleolus: {
-    width: 18,
-    height: 18,
-    borderRadius: 9,
     backgroundColor: '#FB8C00',
     position: 'absolute',
     top: '35%',
@@ -234,3 +340,12 @@ const styles = StyleSheet.create({
     position: 'absolute',
   },
 });
+
+export default {
+  Mitochondrion,
+  RoughER,
+  GolgiApparatus,
+  Nucleus,
+  Chloroplast,
+  Plasmid,
+};
