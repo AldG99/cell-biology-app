@@ -1,34 +1,35 @@
-// components/ProkaryoticCell.js
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, View, Dimensions } from 'react-native';
 import BaseCell from '../shared/BaseCell';
+import { Plasmid } from '../shared/CellParts';
 import { prokaryoticCellConfig } from '../../data/cellVisualizations';
 
+const { width } = Dimensions.get('window');
+// Scale factor for part sizes based on screen width
+const SCALE_FACTOR = width < 360 ? 0.8 : 1;
+
 const ProkaryoticCell = ({ onSelectPart }) => {
-  // Función para renderizar formas personalizadas específicas de célula procariota
+  // Function to render custom shapes specific to prokaryotic cells
   const renderCustomShape = part => {
+    // Apply scale factor to all sizes
+    const scaledPart = {
+      ...part,
+      size: part.size ? part.size * SCALE_FACTOR : undefined,
+      width: part.width ? part.width * SCALE_FACTOR : undefined,
+      height: part.height ? part.height * SCALE_FACTOR : undefined,
+    };
+
     switch (part.customShape) {
       case 'dna':
-        // ADN circular dentro del nucleoide
+        // Circular DNA within the nucleoid
         return <View style={styles.dnaCircle} />;
 
       case 'plasmid':
-        // Plásmido (pequeño círculo de ADN)
-        return (
-          <View
-            style={[
-              styles.plasmidCircle,
-              {
-                width: part.size,
-                height: part.size,
-                borderRadius: part.size / 2,
-              },
-            ]}
-          />
-        );
+        // Plasmid (small DNA circle)
+        return <Plasmid color={scaledPart.color} size={scaledPart.size} />;
 
       case 'flagellum':
-        // Flagelo (estructura larga y ondulada)
+        // Flagellum (long, wavy structure)
         return (
           <View style={styles.flagellumContainer}>
             <View style={styles.flagellumBase} />
@@ -37,10 +38,10 @@ const ProkaryoticCell = ({ onSelectPart }) => {
         );
 
       case 'pili':
-        // Múltiples pili (pelos) alrededor de la célula
+        // Multiple pili (hairs) around the cell
         return (
           <View style={styles.piliContainer}>
-            {/* Pili en diferentes posiciones */}
+            {/* Pili at different positions */}
             <View
               style={[
                 styles.pilus,
@@ -75,15 +76,15 @@ const ProkaryoticCell = ({ onSelectPart }) => {
         );
 
       case 'mesosome':
-        // Mesosoma (invaginación de la membrana)
+        // Mesosome (membrane invagination)
         return (
           <View
             style={[
               styles.mesosomeOuter,
               {
-                width: part.size,
-                height: part.size,
-                borderRadius: part.size / 2,
+                width: scaledPart.size,
+                height: scaledPart.size,
+                borderRadius: scaledPart.size / 2,
               },
             ]}
           >
@@ -91,9 +92,9 @@ const ProkaryoticCell = ({ onSelectPart }) => {
               style={[
                 styles.mesosomeInner,
                 {
-                  width: part.size * 0.6,
-                  height: part.size * 0.6,
-                  borderRadius: part.size * 0.3,
+                  width: scaledPart.size * 0.6,
+                  height: scaledPart.size * 0.6,
+                  borderRadius: scaledPart.size * 0.3,
                 },
               ]}
             />
@@ -105,58 +106,64 @@ const ProkaryoticCell = ({ onSelectPart }) => {
     }
   };
 
+  // Create a scaled version of the configuration
+  const scaledConfig = {
+    ...prokaryoticCellConfig,
+    parts: prokaryoticCellConfig.parts.map(part => ({
+      ...part,
+      size: part.size ? part.size * SCALE_FACTOR : undefined,
+      width: part.width ? part.width * SCALE_FACTOR : undefined,
+      height: part.height ? part.height * SCALE_FACTOR : undefined,
+    })),
+  };
+
   return (
     <BaseCell
-      config={prokaryoticCellConfig}
+      config={scaledConfig}
       onSelectPart={onSelectPart}
       renderCustomShape={renderCustomShape}
       cytoplasmColor="rgba(178, 223, 219, 0.3)"
       membraneColor="#64B5F6"
       membraneWidth={1.5}
-      shape="rectangular"
+      cellShape="oval" // Oval shape with flagellum for prokaryotic cell
     />
   );
 };
 
 const styles = StyleSheet.create({
   dnaCircle: {
-    width: 45,
-    height: 30,
-    borderRadius: 15,
+    width: 45 * SCALE_FACTOR,
+    height: 30 * SCALE_FACTOR,
+    borderRadius: 15 * SCALE_FACTOR,
     borderWidth: 2,
     borderColor: '#FF9100',
     borderStyle: 'dashed',
   },
-  plasmidCircle: {
-    borderWidth: 1.5,
-    borderColor: '#FF6D00',
-    borderStyle: 'dashed',
-  },
   flagellumContainer: {
-    width: 4,
-    height: 80,
+    width: 4 * SCALE_FACTOR,
+    height: 80 * SCALE_FACTOR,
     position: 'relative',
   },
   flagellumBase: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
+    width: 6 * SCALE_FACTOR,
+    height: 6 * SCALE_FACTOR,
+    borderRadius: 3 * SCALE_FACTOR,
     backgroundColor: '#78909C',
     position: 'absolute',
     top: 0,
-    left: -1,
+    left: -1 * SCALE_FACTOR,
   },
   flagellumFilament: {
-    width: 4,
-    height: 70,
+    width: 4 * SCALE_FACTOR,
+    height: 70 * SCALE_FACTOR,
     backgroundColor: '#90A4AE',
-    borderTopRightRadius: 2,
-    borderTopLeftRadius: 2,
-    borderBottomRightRadius: 2,
-    borderBottomLeftRadius: 2,
+    borderTopRightRadius: 2 * SCALE_FACTOR,
+    borderTopLeftRadius: 2 * SCALE_FACTOR,
+    borderBottomRightRadius: 2 * SCALE_FACTOR,
+    borderBottomLeftRadius: 2 * SCALE_FACTOR,
     position: 'absolute',
-    top: 10,
-    transform: [{ rotate: '5deg' }, { translateX: -1 }],
+    top: 10 * SCALE_FACTOR,
+    transform: [{ rotate: '5deg' }, { translateX: -1 * SCALE_FACTOR }],
   },
   piliContainer: {
     width: '100%',
@@ -165,8 +172,8 @@ const styles = StyleSheet.create({
   },
   pilus: {
     position: 'absolute',
-    width: 2,
-    height: 15,
+    width: 2 * SCALE_FACTOR,
+    height: 15 * SCALE_FACTOR,
     backgroundColor: '#B0BEC5',
   },
   mesosomeOuter: {
