@@ -1,51 +1,55 @@
-// components/PlantCell.js
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, View, Dimensions } from 'react-native';
 import BaseCell from '../shared/BaseCell';
 import {
   RoughER,
   GolgiApparatus,
   Nucleus,
-  Mitochondrion,
+  Chloroplast,
 } from '../shared/CellParts';
 import { plantCellConfig } from '../../data/cellVisualizations';
 
+const { width } = Dimensions.get('window');
+// Scale factor for part sizes based on screen width
+const SCALE_FACTOR = width < 360 ? 0.8 : 1;
+
 const PlantCell = ({ onSelectPart }) => {
-  // Función para renderizar formas personalizadas específicas de célula vegetal
+  // Function to render custom shapes specific to plant cells
   const renderCustomShape = part => {
+    // Apply scale factor to all sizes
+    const scaledPart = {
+      ...part,
+      size: part.size ? part.size * SCALE_FACTOR : undefined,
+      width: part.width ? part.width * SCALE_FACTOR : undefined,
+      height: part.height ? part.height * SCALE_FACTOR : undefined,
+    };
+
     switch (part.customShape) {
       case 'chloroplast':
         return (
-          <View
-            style={[
-              styles.chloroplast,
-              {
-                width: part.width,
-                height: part.height,
-                backgroundColor: part.color,
-                borderRadius: part.borderRadius,
-              },
-            ]}
-          >
-            {/* Tilacoides y grana */}
-            <View style={styles.thylakoidMembrane1} />
-            <View style={styles.thylakoidMembrane2} />
-            <View style={styles.thylakoidMembrane3} />
-            <View style={styles.stroma} />
-          </View>
+          <Chloroplast
+            color={scaledPart.color}
+            width={scaledPart.width}
+            height={scaledPart.height}
+            borderRadius={scaledPart.borderRadius}
+          />
         );
 
       case 'rough-er':
         return (
-          <RoughER color={part.color} width={part.width} height={part.height} />
+          <RoughER
+            color={scaledPart.color}
+            width={scaledPart.width}
+            height={scaledPart.height}
+          />
         );
 
       case 'golgi':
         return (
           <GolgiApparatus
-            color={part.color}
-            width={part.width}
-            height={part.height}
+            color={scaledPart.color}
+            width={scaledPart.width}
+            height={scaledPart.height}
           />
         );
 
@@ -55,20 +59,20 @@ const PlantCell = ({ onSelectPart }) => {
             style={[
               styles.amyloplast,
               {
-                width: part.size,
-                height: part.size,
-                backgroundColor: part.color,
-                borderRadius: part.size / 2,
+                width: scaledPart.size,
+                height: scaledPart.size,
+                backgroundColor: scaledPart.color,
+                borderRadius: scaledPart.size / 2,
               },
             ]}
           >
-            {/* Gránulos de almidón */}
+            {/* Starch granules */}
             <View style={styles.starchGranule} />
           </View>
         );
 
       case 'plasmodesmata':
-        // Renderizar plasmodesmos en diferentes ubicaciones
+        // Render plasmodesmata at different locations
         return (
           <>
             <PlasmodesmataUnit position="top" />
@@ -78,12 +82,21 @@ const PlantCell = ({ onSelectPart }) => {
           </>
         );
 
+      case 'nucleus':
+        return (
+          <Nucleus
+            color={scaledPart.color}
+            size={scaledPart.size}
+            borderColor={scaledPart.borderColor}
+          />
+        );
+
       default:
         return null;
     }
   };
 
-  // Componente para un plasmodesmo individual
+  // Component for an individual plasmodesma
   const PlasmodesmataUnit = ({ position }) => {
     const isVertical = position === 'top' || position === 'bottom';
 
@@ -92,8 +105,8 @@ const PlantCell = ({ onSelectPart }) => {
         style={[
           styles.plasmodesmataBase,
           {
-            width: isVertical ? 15 : 20,
-            height: isVertical ? 20 : 15,
+            width: isVertical ? 15 * SCALE_FACTOR : 20 * SCALE_FACTOR,
+            height: isVertical ? 20 * SCALE_FACTOR : 15 * SCALE_FACTOR,
             [position]: '5%',
             left:
               position === 'right'
@@ -118,56 +131,30 @@ const PlantCell = ({ onSelectPart }) => {
     );
   };
 
+  // Create a scaled version of the configuration
+  const scaledConfig = {
+    ...plantCellConfig,
+    parts: plantCellConfig.parts.map(part => ({
+      ...part,
+      size: part.size ? part.size * SCALE_FACTOR : undefined,
+      width: part.width ? part.width * SCALE_FACTOR : undefined,
+      height: part.height ? part.height * SCALE_FACTOR : undefined,
+    })),
+  };
+
   return (
     <BaseCell
-      config={plantCellConfig}
+      config={scaledConfig}
       onSelectPart={onSelectPart}
       renderCustomShape={renderCustomShape}
       cytoplasmColor="rgba(220, 237, 200, 0.4)"
       membraneColor="#9CCC65"
-      shape="round"
+      cellShape="hexagonal" // Hexagonal shape for plant cell
     />
   );
 };
 
 const styles = StyleSheet.create({
-  chloroplast: {
-    justifyContent: 'center',
-    position: 'relative',
-  },
-  thylakoidMembrane1: {
-    position: 'absolute',
-    width: '80%',
-    height: 2,
-    backgroundColor: '#43A047',
-    top: '30%',
-    left: '10%',
-  },
-  thylakoidMembrane2: {
-    position: 'absolute',
-    width: '70%',
-    height: 2,
-    backgroundColor: '#43A047',
-    top: '50%',
-    left: '15%',
-  },
-  thylakoidMembrane3: {
-    position: 'absolute',
-    width: '60%',
-    height: 2,
-    backgroundColor: '#43A047',
-    top: '70%',
-    left: '20%',
-  },
-  stroma: {
-    position: 'absolute',
-    width: '20%',
-    height: '20%',
-    backgroundColor: '#81C784',
-    borderRadius: 3,
-    top: '40%',
-    left: '65%',
-  },
   amyloplast: {
     justifyContent: 'center',
     alignItems: 'center',
